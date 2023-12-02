@@ -6,13 +6,14 @@ interface Response {
   dateResponded: string;
 }
 
-interface Ticket {
+export interface Ticket {
   id: number;
   name: string;
   email: string;
   description: string;
   status: string;
-  dateSubmitted: string;
+  date: string;
+  time: string;
   responses: Response[];
 }
 
