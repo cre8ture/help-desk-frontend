@@ -10,6 +10,10 @@ interface TicketListProps {
   isTriggerUpdate: boolean;
 }
 
+
+const url: string = 'https://d1yhu19u1ntxvm.cloudfront.net/tickets'
+
+
 /**
  * Renders a list of tickets and associated components.
  *
@@ -26,10 +30,16 @@ const TicketList: React.FC<TicketListProps> = ({ tickets, isTriggerUpdate}) => {
   }
   
 
+  /**
+   * Fetches data from the specified URL and updates the state accordingly.
+   *
+   * @return {Promise<void>} - A promise that resolves when the data has been fetched and the state has been updated.
+   */
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets');
+    //   const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets');
+    const response = await fetch(url);
       const data = await response.json();
       setTicketsState(data);
       setIsLoading(false);

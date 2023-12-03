@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { loadFromLocalStorage } from '../utils/localStorage';
-let userEmail2: any;
-
 import { Ticket } from '../sampleData/data';
 import Form from './Form';
+
+const url:string = 'https://d1yhu19u1ntxvm.cloudfront.net/tickets'
+let userEmail2: any;
+
 
 const TicketList: React.FC = () => {
 const[userEmail, setUserEmail] = useState<string | null>(loadFromLocalStorage("helpdesk_sample"));
@@ -20,7 +22,9 @@ const getEmail = async () => {
 
 const fetchData = async () => {
   try {
-    const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets');
+    // const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets');
+    const response = await fetch(url);
+
     const data = await response.json();
 
     setTickets((prevTickets) => {

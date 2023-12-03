@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Stats from "./stats/StatContainer"
-// import Emails from "./stats/Emails"
-// import Graph from "./stats/Graph"
 
+const url: string = 'https://d1yhu19u1ntxvm.cloudfront.net/tickets'
 
 interface TicketListProps {
 }
@@ -74,7 +73,9 @@ const TicketList: React.FC<TicketListProps> = () => {
 
   const handleResponseSubmit = async (id: any, fieldToChange: string, newValue: string) => {
     try {
-      const response = await fetch(`http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets/${id}`, {
+      // const response = await fetch(`http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets/${id}`, {
+      const response = await fetch(url + `/${id}`, {
+
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -127,7 +128,8 @@ const TicketList: React.FC<TicketListProps> = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets');
+      // const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets');
+      const response = await fetch(url);
       const data = await response.json();
       const ticketsWithResponseForm = data.map((ticket: any) => ({ ...ticket, showResponseForm: false }));
       setTickets(ticketsWithResponseForm);
@@ -150,7 +152,7 @@ const TicketList: React.FC<TicketListProps> = () => {
       {isLoading && <p>Loading...</p>}
       {tickets.length === 0 && <p>No tickets found, Yay!</p>}
 
-      <Stats tickets={tickets} isTriggerUpdate={isTriggerGraphUpdate}/>
+      {/* <Stats tickets={tickets} isTriggerUpdate={isTriggerGraphUpdate} /> */}
       <br />
       <br />
       <h3>Tickets</h3>

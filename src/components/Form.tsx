@@ -1,21 +1,27 @@
 import * as React from 'react';
 import { loadFromLocalStorage } from '../utils/localStorage';
-
 import "./forms.css"
+
+const url: string = 'https://d1yhu19u1ntxvm.cloudfront.net/tickets'
 
 type HelpDeskFormProps = {
   fetchData: () => void;
-  [key: string]: any; 
+  [key: string]: any;
 };
 
 
 
 
-const HelpDeskForm: React.FC<HelpDeskFormProps> = ({ fetchData}) => {
-  // const { userEmail } = useMyContext();
-const[userEmail, setUserEmail] = React.useState<string | null>(loadFromLocalStorage("helpdesk_sample"));
+/**
+ * Renders a HelpDeskForm component.
+ *
+ * @param {HelpDeskFormProps} fetchData - A function to fetch data.
+ * @return {ReactNode} The rendered HelpDeskForm component.
+ */
+const HelpDeskForm: React.FC<HelpDeskFormProps> = ({ fetchData }) => {
+  const [userEmail, setUserEmail] = React.useState<string | null>(loadFromLocalStorage("helpdesk_sample"));
 
-  
+
   const [formData, setFormData] = React.useState({
     name: '',
     email: userEmail,
@@ -24,30 +30,38 @@ const[userEmail, setUserEmail] = React.useState<string | null>(loadFromLocalStor
   const [isSubmitting, setIsSubmitting] = React.useState(false); // State to track submission status
 
 
-  const getEmail = async () => {  
+  const getEmail = async () => {
     const userEmail2 = await loadFromLocalStorage("helpdesk_sample")
     setUserEmail(userEmail2)
-}
+  }
 
 
 
-React.useEffect(() => {
-  getEmail()
-}, []);
+  React.useEffect(() => {
+    getEmail()
+  }, []);
 
+  /**
+   * Handles the form submission event.
+   *
+   * @param {React.FormEvent} event - The form event.
+   * @return {Promise<void>} A promise that resolves when the submission is complete.
+   */
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setIsSubmitting(true); // Set isSubmitting to true
-    const status:any = document.getElementById('status');
+    setIsSubmitting(true); 
+    const status: any = document.getElementById('status');
     try {
-      const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets', {
+      // const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets', {
+      const response = await fetch(url, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ...formData, email: userEmail }),
       });
-  
+
       if (response.ok) {
         fetchData();
         console.log('Ticket submitted successfully');
@@ -65,7 +79,13 @@ React.useEffect(() => {
       setIsSubmitting(false); // Reset isSubmitting regardless of outcome
     }
   };
-  
+
+  /**
+   * Handles the change event of an input element.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} event - The change event.
+   * @return {void} This function does not return anything.
+   */
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setFormData({
@@ -80,7 +100,7 @@ React.useEffect(() => {
     borderRadius: '8px',
     width: '300px',
     margin: '0 auto',
-   
+
   };
 
   const formStyle = {
@@ -111,8 +131,8 @@ React.useEffect(() => {
   return (
     <div>
       <div style={formContainerStyle}>
-        <p id="status" style={{color:"darkgrey", marginTop: "5px"}}></p>
-        <form style={{...formStyle,alignContent: "start", alignItems: "start", flexDirection: "column"}} onSubmit={handleSubmit}>
+        <p id="status" style={{ color: "darkgrey", marginTop: "5px" }}></p>
+        <form style={{ ...formStyle, alignContent: "start", alignItems: "start", flexDirection: "column" }} onSubmit={handleSubmit}>
           <p>Please submit your question</p>
           <label style={labelStyle}>
             Name
@@ -127,8 +147,8 @@ React.useEffect(() => {
           </label>
           <label style={labelStyle}>
             Email
-          
-            <p style={{border: "1px solid darkgrey", margin: "10px", padding: "10px", borderRadius: '15px'}}>{userEmail}</p>
+
+            <p style={{ border: "1px solid darkgrey", margin: "10px", padding: "10px", borderRadius: '15px' }}>{userEmail}</p>
           </label>
           <label style={labelStyle}>
             Problem Description
