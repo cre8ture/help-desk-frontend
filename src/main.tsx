@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import AppRouter from './Router';
 import { MyContextProvider } from './utils/Context'; // Import your context provider

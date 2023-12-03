@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMyContext } from '../utils/Context';
 import { v4 as uuidv4 } from 'uuid';
-// import {formatDateTime} from '../utils/date';
 import { loadFromLocalStorage } from '../utils/localStorage';
 let userEmail2: any;
 
@@ -9,7 +7,6 @@ import { Ticket } from '../sampleData/data';
 import Form from './Form';
 
 const TicketList: React.FC = () => {
-  // const { userEmail } = useMyContext();
 const[userEmail, setUserEmail] = useState<string | null>(loadFromLocalStorage("helpdesk_sample"));
   
   const [tickets, setTickets] = useState<Ticket[] | null>(null);
@@ -53,7 +50,7 @@ const fetchData = async () => {
   return (
     <div>
       <h1>Welcome, {userEmail || userEmail2}. How can we help you?</h1>
-      <Form fetchData={fetchData} />
+      <Form fetchData={fetchData}  />
       <h2>Your Tickets:</h2>
       {tickets && tickets.length > 0 ? (
         <div>
