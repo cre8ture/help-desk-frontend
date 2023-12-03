@@ -24,7 +24,7 @@ const StatusGraph: React.FC<StatusGraphProps> = ({ tickets }) => {
 
   return (
     <div style={{ maxWidth: '300px' }}>
-      <h2>Status Graph</h2>
+      <h3>Status Graph</h3>
       {Object.entries(statusCounts).map(([status, count]) => (
         <div key={status}>
           <span>{status}</span>

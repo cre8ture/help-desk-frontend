@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Stats from "./stats/StatContainer"
 
-const url: string = 'https://d1yhu19u1ntxvm.cloudfront.net/tickets'
+const url: string = 'http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets'
 
 interface TicketListProps {
 }

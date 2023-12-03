@@ -1,4 +1,4 @@
-// data.ts
+// provides a type for Ticket and a sample data object for testing purposes
 
 export interface Ticket {
   id: number;

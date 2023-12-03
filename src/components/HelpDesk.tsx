@@ -4,7 +4,7 @@ import { loadFromLocalStorage } from '../utils/localStorage';
 import { Ticket } from '../sampleData/data';
 import Form from './Form';
 
-const url:string = 'https://d1yhu19u1ntxvm.cloudfront.net/tickets'
+const url:string = 'http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets'
 let userEmail2: any;
 
 

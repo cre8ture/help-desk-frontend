@@ -12,7 +12,6 @@ const EmailSubmissionForm: React.FC = () => {
 
     saveToLocalStorage('helpdesk_sample', userEmail);
     
-
     // Automatically navigate to the /helpdesk page
     navigate('/helpdesk'); 
   };

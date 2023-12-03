@@ -2,7 +2,7 @@ import * as React from 'react';
 import { loadFromLocalStorage } from '../utils/localStorage';
 import "./forms.css"
 
-const url: string = 'https://d1yhu19u1ntxvm.cloudfront.net/tickets'
+const url: string = 'http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets'
 
 type HelpDeskFormProps = {
   fetchData: () => void;
