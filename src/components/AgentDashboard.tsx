@@ -133,7 +133,7 @@ const TicketList: React.FC<TicketListProps> = () => {
       const data = await response.json();
       const ticketsWithResponseForm = data.map((ticket: any) => ({ ...ticket, showResponseForm: false }));
       setTickets(ticketsWithResponseForm);
-
+      console.log("data", data)
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -152,7 +152,7 @@ const TicketList: React.FC<TicketListProps> = () => {
       {isLoading && <p>Loading...</p>}
       {tickets.length === 0 && <p>No tickets found, Yay!</p>}
 
-      {/* <Stats tickets={tickets} isTriggerUpdate={isTriggerGraphUpdate} /> */}
+      <Stats tickets={tickets} isTriggerUpdate={isTriggerGraphUpdate} />
       <br />
       <br />
       <h3>Tickets</h3>
