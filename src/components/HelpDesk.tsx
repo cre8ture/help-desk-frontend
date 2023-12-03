@@ -23,9 +23,7 @@ const fetchData = async () => {
     const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets');
     const data = await response.json();
 
-    // Use a functional update to ensure the state is updated correctly
     setTickets((prevTickets) => {
-      // Merge the new data with the previous tickets
       const updatedTickets = prevTickets ? [...prevTickets, ...data] : data;
       return updatedTickets;
     });
@@ -50,7 +48,8 @@ const fetchData = async () => {
   return (
     <div>
       <h1>Welcome, {userEmail || userEmail2}. How can we help you?</h1>
-      <Form fetchData={fetchData}  />
+      {/* <Form fetchData={fetchData}  /> */}
+      <Form />
       <h2>Your Tickets:</h2>
       {tickets && tickets.length > 0 ? (
         <div>

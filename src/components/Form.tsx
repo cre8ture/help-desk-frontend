@@ -4,8 +4,8 @@ import { loadFromLocalStorage } from '../utils/localStorage';
 import "./forms.css"
 
 type HelpDeskFormProps = {
-  fetchData: () => void; // fetchData should be a function that takes no arguments and returns void
-  userEmail: string | null;  
+  fetchData: () => void;
+  [key: string]: any; 
 };
 
 
