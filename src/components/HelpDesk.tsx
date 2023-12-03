@@ -48,8 +48,7 @@ const fetchData = async () => {
   return (
     <div>
       <h1>Welcome, {userEmail || userEmail2}. How can we help you?</h1>
-      {/* <Form fetchData={fetchData}  /> */}
-      <Form />
+      <Form fetchData={fetchData}  />
       <h2>Your Tickets:</h2>
       {tickets && tickets.length > 0 ? (
         <div>
