@@ -1,57 +1,69 @@
 import * as React from 'react';
-import { useMyContext } from '../utils/Context';
+import { useMyContext, } from '../utils/Context';
+import { loadFromLocalStorage } from '../utils/localStorage';
+
+import "./forms.css"
 
 type HelpDeskFormProps = {
   fetchData: () => void; // fetchData should be a function that takes no arguments and returns void
-  
+  userEmail: string | null;  
 };
 
 
 
 
 const HelpDeskForm: React.FC<HelpDeskFormProps> = ({ fetchData}) => {
-  const { userEmail } = useMyContext();
+  // const { userEmail } = useMyContext();
+const[userEmail, setUserEmail] = React.useState<string | null>(loadFromLocalStorage("helpdesk_sample"));
+
+  
   const [formData, setFormData] = React.useState({
     name: '',
     email: userEmail,
     description: '',
   });
+  const [isSubmitting, setIsSubmitting] = React.useState(false); // State to track submission status
+
+
+  const getEmail = async () => {  
+    const userEmail2 = await loadFromLocalStorage("helpdesk_sample")
+    setUserEmail(userEmail2)
+}
+
+
+
+React.useEffect(() => {
+  getEmail()
+}, []);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
-    // Create a new Date object for the current date and time
-    const currentDateTime = new Date();
-  
-    // Format the date and time separately
-    const currentDate = currentDateTime.toISOString().split('T')[0]; // YYYY-MM-DD format
-    const currentTime = currentDateTime.toTimeString().split(' ')[0]; // HH:MM:SS format
-  
-    // Extend formData with the separate date and time
-    const extendedFormData = {
-      ...formData,
-      // date: currentDate,
-      // time: currentTime,
-    };
-    
+    setIsSubmitting(true); // Set isSubmitting to true
+    const status:any = document.getElementById('status');
     try {
       const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(extendedFormData),
+        body: JSON.stringify({ ...formData, email: userEmail }),
       });
   
       if (response.ok) {
-        // Handle successful response
         fetchData();
         console.log('Ticket submitted successfully');
+        setFormData({ name: '', email: userEmail, description: '' }); // Reset form data
+        status.innerText = 'Ticket submitted successfully';
+        status.style.color = 'green';
       } else {
-        // Handle error response
         console.error('Failed to submit ticket');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('An error occurred:', error);
+      status.innerText = 'An error occurred', error.message;
+      status.style.color = 'red';
+    } finally {
+      setIsSubmitting(false); // Reset isSubmitting regardless of outcome
     }
   };
   
@@ -64,31 +76,45 @@ const HelpDeskForm: React.FC<HelpDeskFormProps> = ({ fetchData}) => {
   };
 
   const formContainerStyle = {
-    padding: '20px',
+    paddingLeft: '20px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     borderRadius: '8px',
     width: '300px',
     margin: '0 auto',
+   
   };
 
+  const formStyle = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "left",
+    justifyContent: "center",
+    marginTop: '0',
+    paddingTop: '5px',
+  }
   const labelStyle = {
     display: 'block',
     marginBottom: '10px',
   };
 
   const inputStyle = {
-    width: '100%',
+    width: '80%',
     padding: '8px',
     marginBottom: '15px',
+    marginLeft: '10px',
+    marginRight: '10px',
+    boxShadow: '0px',
     border: '1px solid #ccc',
-    borderRadius: '4px',
+    borderRadius: '15px',
+    backgroundColor: 'white',
   };
 
   return (
     <div>
-      <button>Open Help Desk Form</button>
       <div style={formContainerStyle}>
-        <form onSubmit={handleSubmit}>
+        <p id="status" style={{color:"darkgrey", marginTop: "5px"}}></p>
+        <form style={{...formStyle,alignContent: "start", alignItems: "start", flexDirection: "column"}} onSubmit={handleSubmit}>
+          <p>Please submit your question</p>
           <label style={labelStyle}>
             Name
             <input
@@ -102,14 +128,8 @@ const HelpDeskForm: React.FC<HelpDeskFormProps> = ({ fetchData}) => {
           </label>
           <label style={labelStyle}>
             Email
-            <input
-              type="email"
-              name="email"
-              required
-              style={inputStyle}
-              value={formData.email}
-              onChange={handleChange}
-            />
+          
+            <p style={{border: "1px solid darkgrey", margin: "10px", padding: "10px", borderRadius: '15px'}}>{userEmail}</p>
           </label>
           <label style={labelStyle}>
             Problem Description
@@ -121,11 +141,8 @@ const HelpDeskForm: React.FC<HelpDeskFormProps> = ({ fetchData}) => {
               onChange={handleChange}
             />
           </label>
-          <button
-            type="submit"
-            style={{ width: '100%', padding: '10px', border: 'none', borderRadius: '4px' }}
-          >
-            Submit
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
         </form>
       </div>

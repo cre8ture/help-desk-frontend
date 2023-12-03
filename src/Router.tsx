@@ -4,7 +4,7 @@ import App from './App';
 import Navigation from './Navigation'; // Import your Navigation component
 import Helpdesk from './components/HelpDesk'; // Import your Helpdesk component
 import AgentDashboard from './components/AgentDashboard'; // Import your AgentDashboard component
-import { data } from './sampleData/data'; // Import your data
+// import { data } from './sampleData/data'; // Import your data
 
 const AppRouter: React.FC = () => {
     return (
@@ -12,7 +12,7 @@ const AppRouter: React.FC = () => {
         <Navigation />
         <Routes>
           <Route path="/helpdesk" element={<Helpdesk />} />
-          <Route path="/agent-dashboard" element={<AgentDashboard data={data} />} />
+          <Route path="/agent-dashboard" element={<AgentDashboard/>} />
           <Route path="/" element={<App />} />
         </Routes>
       </Router>

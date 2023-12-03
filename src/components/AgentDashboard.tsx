@@ -1,47 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {formatDateTime} from '../utils/date';
-import { v4 as uuidv4 } from 'uuid';
-
-
-interface Response {
-  staffName: string;
-  response: string;
-  dateResponded: string;
-}
-
-interface Ticket {
-  id: number;
-  name: string;
-  email: string;
-  description: string;
-  status: string;
-  dateSubmitted: string;
-  response_name: string; // TEXT,  // Stores the name of the responder
-  response_response: string; // TEXT,  // Stores the response text
-  dateResponded: string; // DATE  // Stores the date and time when a response is made
-}
+import Stats from "./stats/StatContainer"
+// import Emails from "./stats/Emails"
+// import Graph from "./stats/Graph"
 
 
 interface TicketListProps {
-  // data: Data;
 }
 
-const url:string = 'http://localhost:3000/tickets'
 
+/**
+ * Renders a list of tickets with sorting functionality and the ability to respond to each ticket.
+ *
+ * @return {React.ReactNode} The rendered ticket list component
+ */
 const TicketList: React.FC<TicketListProps> = () => {
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sortCriteria, setSortCriteria] = useState('date');
-  const [_, setResponseText] = useState(''); // To store the response text
+  const [isTriggerGraphUpdate, setIsTriggerGraphUpdate] = useState(false);
 
 
   // Sorting function
-  const sortTickets = (tickets:any, criteria:any) => {
+  const sortTickets = (tickets: any, criteria: any) => {
     return [...tickets].sort((a, b) => {
       if (criteria === 'date') {
         const dateA = new Date(a.date + ' ' + a.time);
         const dateB = new Date(b.date + ' ' + b.time);
-  
+
         // Check if both dates are valid
         if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
           return dateA.getTime() - dateB.getTime();
@@ -55,10 +40,15 @@ const TicketList: React.FC<TicketListProps> = () => {
       }
     });
   };
-  
-  // Create a ref for the textarea element
-  const responseTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  // Create a ref for the textarea element
+  const responseTextareaRef = useRef<HTMLTextAreaElement | any>(null);
+
+  /**
+   * Toggles the showResponseForm state for the clicked ticket and focuses on the textarea element when showing the response form.
+   *
+   * @param {number} ticketId - The ID of the ticket that was clicked.
+   */
   const handleResponseButtonClick = (ticketId: number) => {
     // Toggle the showResponseForm state for the clicked ticket
     setTickets((prevTickets: any) =>
@@ -73,9 +63,17 @@ const TicketList: React.FC<TicketListProps> = () => {
     }
   };
 
-  const handleResponseSubmit = async (id: string, fieldToChange: string, newValue: any) => {
+  /**
+   * Handles the submission of a response.
+   *
+   * @param {string} id - The ID of the ticket to update.
+   * @param {string} fieldToChange - The field to update in the ticket.
+   * @param {any} newValue - The new value for the field.
+   * @return {Promise<void>} - A promise that resolves once the response is handled.
+   */
+
+  const handleResponseSubmit = async (id: any, fieldToChange: string, newValue: string) => {
     try {
-      // Make a PUT request to update the ticket
       const response = await fetch(`http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets/${id}`, {
         method: 'PUT',
         headers: {
@@ -88,33 +86,50 @@ const TicketList: React.FC<TicketListProps> = () => {
       });
 
       if (response.ok) {
-        // Handle successful response, e.g., show a success message
-        console.log('Ticket updated successfully. Email successfully sent!');
+        setIsTriggerGraphUpdate(!isTriggerGraphUpdate);
+        console.log('Ticket updated successfully. Would normally send email here with body: ...!');
+        if (fieldToChange === 'status') {
+          const statusElement = document.getElementById(`response-status-${id}`);
+          const responseSelectElement: any = document.getElementById(`response-select-${id}`);
+          if (statusElement) {
+            statusElement.textContent = `Status: ${newValue}`;
+            responseSelectElement.value = newValue;
+          }
 
-        // Call fetchData to refresh the data
-        fetchData();
+        } else if (fieldToChange === 'response_response') {
+          let responseElement = document.getElementById(`response-text-${id}`);
+          let dateElement = document.getElementById(`response-date-${id}`);
+          let textarea: any = document.getElementById(`responseTextarea-${id}`);
+          if (responseElement && dateElement && textarea) {
+            responseElement.textContent = `Response: ${newValue}`;
+            dateElement.textContent = `Date Responded: ${new Date().toLocaleString()}`;
+            textarea.value = '';
+          }
+          else {
+            const responseItemHidden: any = document.getElementById(`response-item-hidden-${id}`);
+            responseItemHidden.style.display = 'block';
+          }
+        }
       } else {
-        // Handle error response, e.g., show an error message
         console.error('Failed to update ticket');
       }
     } catch (error) {
       console.error('An error occurred:', error);
     }
-
-    // After handling the submit, reset the response text
-    setResponseText('');
   };
 
+
+  /**
+   * Fetches data from the specified URL and updates the state with the fetched data.
+   *
+   * @return {void} 
+   */
   const fetchData = async () => {
     setIsLoading(true);
     try {
       const response = await fetch('http://helpdesk-env2.eba-ijmntygi.us-east-1.elasticbeanstalk.com/tickets');
       const data = await response.json();
-
-      console.log("data", data);
-      // Add the showResponseForm property to each ticket
       const ticketsWithResponseForm = data.map((ticket: any) => ({ ...ticket, showResponseForm: false }));
-      // Use a functional update to ensure the state is updated correctly
       setTickets(ticketsWithResponseForm);
 
       setIsLoading(false);
@@ -130,10 +145,17 @@ const TicketList: React.FC<TicketListProps> = () => {
 
   return (
     <div className="ticket-list">
-      <h1 className="title">Tickets</h1>
+      <h1 className="title">Welcome, agent!</h1>
+
       {isLoading && <p>Loading...</p>}
+      {tickets.length === 0 && <p>No tickets found, Yay!</p>}
+
+      <Stats tickets={tickets} isTriggerUpdate={isTriggerGraphUpdate}/>
+      <br />
+      <br />
+      <h3>Tickets</h3>
       <label htmlFor="sort">Sort by:{' '}</label>
-        <select onChange={(e) => setSortCriteria(e.target.value)}>
+      <select onChange={(e) => setSortCriteria(e.target.value)}>
         <option value="date">Date</option>
         <option value="status">Status</option>
         <option value="email">Email</option>
@@ -141,35 +163,33 @@ const TicketList: React.FC<TicketListProps> = () => {
       {isLoading && <p>Loading...</p>}
       {!isLoading && sortTickets(tickets, sortCriteria).map((ticket, index) => (
         <div key={ticket.id} className={`ticket-card ${isLoading ? 'ticket-card-initial' : 'ticket-card-loaded'}`}>
-          
-        {/* <div key={ticket.id} className="ticket-card"> */}
-          <h2 className="ticket-name">{ticket.name}</h2>
-          <p className="ticket-email">Email: {ticket.email}</p>
-          <p className="ticket-description">Description: {ticket.description}</p>
-          <p className="ticket-status">Status: {ticket.status}</p>
-          <p className="ticket-date">Date Submitted: {new Date(ticket.date).toLocaleString()}</p>
-          <br />
+
+          <h4 className="ticket-name">{ticket.name}</h4>
+          <p className="ticket-email"><label> Email: </label> {ticket.email}</p>
+          <p className="ticket-description"><label> Description: </label>{ticket.description}</p>
+          <p id={`response-status-${ticket.id}`} className="ticket-status"><label>Status: </label>{ticket.status}</p>
+          <p className="ticket-date"><label> Date Submitted:</label> {new Date(ticket.date).toLocaleString()}</p>
+          <p>--------------------------</p>
           <select
+            id={`response-select-${ticket.id}`}
             className="status-select"
             value={ticket.status}
             onChange={(e) => handleResponseSubmit(ticket.id.toString(), 'status', e.target.value)}
           >
-            <option>{ticket.status}</option>
-            <option>New</option>
-            <option>In Progress</option>
-            <option>Resolved</option>
+            <option>new</option>
+            <option>in progress</option>
+            <option>resolved</option>
           </select>
-          <br/>
-          <br/>
+          <br />
+          <br />
 
           {ticket.showResponseForm ? (
-            <div>
+            <div id={`response-form-${ticket.id}`} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <textarea
+                id={`responseTextarea-${ticket.id}`}
                 ref={responseTextareaRef} // Set the ref for the textarea element
                 rows={3}
                 placeholder="Enter your response..."
-                // value={responseText}
-                // onChange={(e) => setResponseText(e.target.value)}
               />
               <button onClick={() => handleResponseSubmit(ticket.id.toString(), 'response_response', responseTextareaRef.current?.value,)}>
                 Submit
@@ -181,21 +201,17 @@ const TicketList: React.FC<TicketListProps> = () => {
             </button>
           )}
 
-          {ticket.response_response &&
-            // ticket.responses.map((response: any, index: number) => (
-              <div key={index} className="response-item">
-                <button className="response-button">Response from {ticket.resonse_name}</button>
-                <div className="response-content">
-                  <p className="response-text">{ticket.response_response}</p>
-                  <p className="response-date">
-                    Date Responded: {ticket. dateResponded} 
-                    {/* {formatDateTime(ticket.date, ticket.time)} */}
-                  </p>
-                </div>
+          <div id={`response-container-${ticket.id}`} className="response-container" style={{ display: 'block' }}>
+            <div id={`response-item-hidden-${ticket.id}`} key={index} className="response-item">
+              <div className="response-content">
+                <p id={`response-text-${ticket.id}`} className="response-text"><label>Response: </label> {ticket.response_response ? ticket.response_response : <span style={{ color: 'red' }}>Awaiting a response from an agent</span>}</p>
+                <p className="response-date">
+                  <label id={`response-date-${ticket.id}`} >Date Responded:</label> {ticket.dateResponded && new Date(ticket.dateResponded).toLocaleString()}
+                </p>
               </div>
-            // ))
-            }
-           
+            </div>
+          </div>
+
         </div>
       ))}
     </div>

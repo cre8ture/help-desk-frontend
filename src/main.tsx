@@ -5,10 +5,7 @@ import { MyContextProvider } from './utils/Context'; // Import your context prov
 import './App.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-      {/* Wrap your router with the context provider */}
-      <MyContextProvider>
-        <AppRouter />
-      </MyContextProvider>
-  </React.StrictMode>,
+  <MyContextProvider>
+    <AppRouter />
+  </MyContextProvider>
 );

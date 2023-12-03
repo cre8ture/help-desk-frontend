@@ -1,14 +1,6 @@
 import React from 'react';
+import { Ticket } from '../../sampleData/data';
 
-interface Ticket {
-    id: number;
-    name: string;
-    email: string;
-    description: string;
-    date: string;
-    time: string;
-    status: string;
-  }
   
 
 interface MostTicketsEmailProps {
@@ -25,8 +17,8 @@ const MostTicketsEmail: React.FC<MostTicketsEmailProps> = ({ tickets }) => {
 
   return (
     <div>
-      <h2>Email with Most Tickets</h2>
-      <p>{mostTicketsEmail}</p>
+      <h3>Email with Most Tickets</h3>
+      <p style={{fontSize:'20px'}}>{mostTicketsEmail}</p>
     </div>
   );
 };

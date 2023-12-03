@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useMyContext } from '../utils/Context';
 import { v4 as uuidv4 } from 'uuid';
-import {formatDateTime} from '../utils/date';
-import { saveToLocalStorage, loadFromLocalStorage } from '../utils/localStorage';
+// import {formatDateTime} from '../utils/date';
+import { loadFromLocalStorage } from '../utils/localStorage';
 let userEmail2: any;
 
 import { Ticket } from '../sampleData/data';
 import Form from './Form';
 
 const TicketList: React.FC = () => {
-  const { userEmail } = useMyContext();
-// const[userEmail, setUserEmail] = useState<string | null>(loadFromLocalStorage("helpdesk_sample"));
+  // const { userEmail } = useMyContext();
+const[userEmail, setUserEmail] = useState<string | null>(loadFromLocalStorage("helpdesk_sample"));
   
   const [tickets, setTickets] = useState<Ticket[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +18,7 @@ const TicketList: React.FC = () => {
 
 const getEmail = async () => {  
      userEmail2 = await loadFromLocalStorage("helpdesk_sample")
+     setUserEmail(userEmail2)
 }
 
 const fetchData = async () => {
@@ -67,14 +68,15 @@ const fetchData = async () => {
                 <p>Status: {ticket.status}</p>
                 <p>Date Submitted: {ticket.date} </p> 
                 {/* formatDateTime(ticket.date, ticket.time)} */}
-                <ul>
-
-                  {ticket.responses && ticket.responses.map((response, index) => (
-                    <li key={index}>
-                      <strong>Response from {response.staffName}:</strong> {response.response}
-                    </li>
-                  ))}
-                </ul>
+                  {ticket.response_response 
+                  &&
+                   <div>
+                      <strong>Response from {ticket.response_name}:</strong> {ticket.response_response}
+                      <p>Date: {new Date(ticket.dateResponded).toLocaleString()}</p>
+                    </div>
+                  }
+                <br/>
+                <hr />
               </div>
             ))}
         </div>
